@@ -1,0 +1,51 @@
+name: BookSearch CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        # Set up Python environment
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+
+      # Install Virtual ENV
+      - name: Install Python Virtual ENV
+        run: pip3 install virtualenv
+
+      # Set up Virtual ENV
+      - name: Virtual ENV
+        uses: actions/cache@v2
+        id: cache-env
+        with:
+          path: venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: /
+            ${{ runner.os }}-venv-
+
+      # Build a Virtual ENV
+      - name: Activate Virtual ENV
+        run: python -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt
+        if: steps.cache-env.outputs.cache-hit != 'true'
+
+      - name: Run Tests
+        run: . venv/bin/activate && pytest
+      - name: create archive of dependencies
+        run: /
+          cd ./venv/lib/python3.11/site-packages
+          zip -r9 ../../../../api.zip .
+      - name: Add API files to Zip file
+        run: cd ./api && zip -g ../api.zip -r .
+      - name: Upload zip file artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: api
+          path: api.zip
