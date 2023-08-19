@@ -8,14 +8,17 @@ on:
 jobs:
   CI:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.11]
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         # Set up Python environment
         uses: actions/setup-python@v2
         with:
-          python-version: 3.11
+          python-version: ${{ matrix.python-version }}
 
       # Install Virtual ENV
       - name: Install Python Virtual ENV
@@ -39,10 +42,8 @@ jobs:
       - name: Run Tests
         run: . venv/bin/activate && pytest
       - name: create archive of dependencies
-        run:
-          /
-          cd ./venv/lib/python3.11/site-packages
-          # zip -r9 ../../../api.zip .
+        run: cd ./venv/lib/python3.11/site-packages
+          zip -r9 ../../../../api.zip .
       - name: Add API files to Zip file
         run: cd ./api && zip -g ../api.zip -r .
       - name: Upload zip file artifact
