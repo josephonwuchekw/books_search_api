@@ -9,6 +9,7 @@ httpcore==0.17.3
 httpx==0.24.1
 idna==3.4
 iniconfig==2.0.0
+mangum==0.17.0
 packaging==23.1
 pluggy==1.2.0
 pydantic==2.2.1
