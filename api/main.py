@@ -6,7 +6,7 @@ app = FastAPI()
 
 @app.get("/")
 def root():
-    return {"message": "Book Search API"}
+    return {"message": "API"}
 
 
 handler = Mangum(app=app)
