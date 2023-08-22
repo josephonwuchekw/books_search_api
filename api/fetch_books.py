@@ -44,6 +44,7 @@ def fetch_books_by_query(q, filter, start_index,
         url += f'&startIndex={start_index}'
 
     if count_per_page != 10:
+        print("Page count:", count_per_page)
         url += f'&maxResults={count_per_page}'
 
     if download_format:
