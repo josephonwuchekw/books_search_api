@@ -10,11 +10,11 @@ def test_root_returns_json():
     assert response.json()
 
 
-# def test_get_books_valid_query():
-#     response = client.get("/api/v1/books/?q=mohicans")
-#     assert response.status_code == 200
+def test_get_books_valid_query():
+    response = client.get("/api/v1/books/?q=mohicans")
+    assert response.status_code == 200
 
 
-# def test_get_books_empty_query():
-#     response = client.get("/api/v1/books/?q=")
-#     assert response.status_code == 400
+def test_get_books_empty_query():
+    response = client.get("/api/v1/books/?q=")
+    assert response.status_code == 400
