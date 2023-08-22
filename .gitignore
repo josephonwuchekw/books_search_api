@@ -1,3 +1,5 @@
 .env
 config*
 *.pyc
+dependencies
+aws_lambda_artifact*
