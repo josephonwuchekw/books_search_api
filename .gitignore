@@ -1,5 +1,8 @@
 .env
+.vscode
+.pytest_cache
 config*
 *.pyc
 dependencies
 aws_lambda_artifact*
+.vercel
