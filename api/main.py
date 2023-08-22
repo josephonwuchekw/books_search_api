@@ -9,7 +9,6 @@ load_dotenv()
 google_api_key = os.getenv("GOOGLE_API_KEY")
 base_google_books_url = os.getenv("BASE_GOOGLE_BOOKS_URL")
 
-
 def fetch_books_by_query(q, filter, start_index,
                          count_per_page, print_type='all',
                          download_format=False, order_by='relevance'):
@@ -58,7 +57,6 @@ def fetch_books_by_query(q, filter, start_index,
 
     return response.json()
 
-
 def fetch_book_by_id(book_id):
     url = f'{base_google_books_url}/{book_id}'
     url += f'?key={google_api_key}'
@@ -66,7 +64,6 @@ def fetch_book_by_id(book_id):
     response = requests.get(url)
 
     return response.json()
-
 
 app = FastAPI()
 
@@ -82,15 +79,42 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
+handler = Mangum(app)
+
+@app.get("/",description="Get API information", response_model=dict)
 async def root():
-    return {"message": "API"}
+    """
+    Get information about the API.
+
+    Returns:
+    - **info**: API information.
+    """
+
+    info = {"version": "1.0", "message": "Google Books API"}
+
+    return info
 
 
 @app.get("/api/v1/books/")
 async def get_books(q: str, download_format: str = "",
                     filter: str = "", start_index: int = 0,
                     count_per_page: int = 10, print_type: str = 'all', order_by: str = 'relevance'):
+    """
+    Get a list of books from Google Books API Volume search.
+
+    Parameters:
+    - **q**: Search query (required).
+    - **download_format**: Filter books by download format (optional).
+    - **filter**: Filter books (optional: 'partial', 'full', 'free-ebooks', 'paid-ebooks', 'ebooks').
+    - **start_index**: Fetch from book at this index (default: 0).
+    - **count_per_page**: Number of books to be fetched (default: 10).
+    - **print_type**: Number of books to be fetched (default: 'all', options: 'all', 'books', 'magazines').
+    - **order_by**: Order books by (default: 'relevance', options: 'relevance', 'newest').
+
+    Returns:
+    - **books**: List of books.
+    """
+    
     # fetch books by query
     query_params = (
         q,
@@ -111,6 +135,16 @@ async def get_books(q: str, download_format: str = "",
 
 @app.get("/api/v1/book/{book_id}")
 async def get_book(book_id):
+    """
+    Get details of a book.
+
+    Parameters:
+    - **book_id**: ID of the book.
+
+    Returns:
+    - **book**: A book detail.
+    """
+
     result = fetch_book_by_id(book_id)
 
     if 'error' in result.keys():
@@ -118,4 +152,3 @@ async def get_book(book_id):
                             detail=f'{result["error"]["message"]}')
     return result
 
-handler = Mangum(app=app)
